@@ -1,0 +1,9 @@
+name: Auctioneer
+version: '${version}'
+main: com.anotherpillow.auctioneer.Auctioneer
+api-version: '1.19'
+
+commands:
+  auctioneer:
+    description: Provides info on plugin.
+    usage: /auctioneer
