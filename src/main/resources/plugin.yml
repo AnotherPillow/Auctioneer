@@ -7,3 +7,6 @@ commands:
   auctioneer:
     description: Provides info on plugin.
     usage: /auctioneer
+  increment:
+    description: tester
+    usage: /increment

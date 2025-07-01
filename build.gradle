@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'com.anotherpillow'
-version = '1.0'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -11,14 +12,19 @@ repositories {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
     }
+//    maven {
+//        url = "https://maven.wolfyscript.com/repository/public/"
+//    }
     maven {
-        url = "https://maven.wolfyscript.com/repository/public/"
+        url 'https://repo.xenondevs.xyz/releases'
     }
 }
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT"
-    compileOnly 'com.wolfyscript.wolfyutilities:wolfyutilities:3.16.1.0'
+//    compileOnly 'com.wolfyscript.wolfyutilities:wolfyutilities:3.16.1.0'
+    implementation "xyz.xenondevs.invui:invui:1.45"
+    shadow "xyz.xenondevs.invui:invui:1.45"
 }
 
 def targetJavaVersion = 17
@@ -43,7 +49,21 @@ processResources {
     def props = [version: version]
     inputs.properties props
     filteringCharset 'UTF-8'
-    filesMatching('paper-plugin.yml') {
+    filesMatching('plugin.yml') {
         expand props
     }
+}
+
+
+tasks.jar {
+    enabled = false
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+}
+
+// ensure the build produces the shadowJar
+tasks.build {
+    dependsOn(tasks.shadowJar)
 }

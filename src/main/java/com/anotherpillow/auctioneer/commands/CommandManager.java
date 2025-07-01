@@ -13,12 +13,13 @@ public class CommandManager {
     public Map<String, CommandExecutor> commands = new HashMap<>();
 
     public CommandManager(Auctioneer plugin) {
-        this.commands.put("auctioneer", new InfoCommand());
+        this.commands.put("auctioneer", new InfoCommand(plugin));
+        this.commands.put("increment", new IncrementCommand(plugin));
 
         this.RegisterPluginCommands(plugin);
     }
 
-    public void RegisterPluginCommands(SkyblockGauntlets plugin) {
+    public void RegisterPluginCommands(Auctioneer plugin) {
         for (Map.Entry<String, CommandExecutor> entry : this.commands.entrySet()) {
             PluginCommand command = plugin.getCommand(entry.getKey());
             if (command != null) command.setExecutor(entry.getValue());
