@@ -16,6 +16,10 @@ public class CommandManager {
         this.commands.put("auctioneer", new InfoCommand(plugin));
         this.commands.put("increment", new IncrementCommand(plugin));
 
+        this.commands.put("startbidding", new StartCommand(plugin));
+        this.commands.put("startbids", new StartCommand(plugin));
+        this.commands.put("upauction", new StartCommand(plugin));
+
         this.RegisterPluginCommands(plugin);
     }
 

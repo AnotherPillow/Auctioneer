@@ -7,6 +7,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import xyz.xenondevs.invui.InvUI;
+import org.bukkit.plugin.RegisteredServiceProvider;
+
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
+import net.milkbowl.vault.permission.Permission;
 
 import java.sql.SQLException;
 import java.util.logging.Logger;
@@ -18,11 +24,12 @@ public final class Auctioneer extends JavaPlugin {
         return super.getLogger();
     }
 
-    public static FileConfiguration config = null;
-
     public static String version = "1.0.0";
 
     public Logger logger = getLogger();
+
+    public static FileConfiguration config = null;
+    public static Economy econ = null;
 
     @Override
     public void onEnable() {
@@ -42,10 +49,28 @@ public final class Auctioneer extends JavaPlugin {
             logger.warning("Failed to setup database " + e.getMessage());
         }
 
+        if (!setupEconomy() ) {
+            logger.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+    }
+
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
     }
 }

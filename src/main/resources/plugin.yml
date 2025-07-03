@@ -10,3 +10,12 @@ commands:
   increment:
     description: tester
     usage: /increment
+  startbidding:
+    description: Start an auction on held item.
+    usage: /startbidding
+  startbids:
+    description: Start an auction on held item.
+    usage: /startbids
+  upauction:
+    description: Start an auction on held item.
+    usage: /upauction

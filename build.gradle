@@ -18,6 +18,9 @@ repositories {
     maven {
         url 'https://repo.xenondevs.xyz/releases'
     }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
@@ -25,6 +28,7 @@ dependencies {
 //    compileOnly 'com.wolfyscript.wolfyutilities:wolfyutilities:3.16.1.0'
     implementation "xyz.xenondevs.invui:invui:1.45"
     shadow "xyz.xenondevs.invui:invui:1.45"
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
 }
 
 def targetJavaVersion = 17
