@@ -7,6 +7,6 @@ import java.util.Map;
 
 public class BiddingGUIManager {
 
-    // stringified d
+    // stringified uuid
     public static HashMap<String, BidGui> windows = new HashMap<>();
 }

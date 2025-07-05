@@ -2,6 +2,8 @@ package com.anotherpillow.auctioneer.commands;
 
 import com.anotherpillow.auctioneer.Auctioneer;
 import com.anotherpillow.auctioneer.db.AuctionManager;
+import com.anotherpillow.auctioneer.gui.BidGui;
+import com.anotherpillow.auctioneer.gui.BiddingGUIManager;
 import com.anotherpillow.auctioneer.gui.StartGui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,6 +23,11 @@ public class ViewAuctionCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Only players may use this command.");
+            return true;
+        }
+
         if (args.length != 1) {
             sender.sendMessage(Component.empty().content("Invalid arguments").color(NamedTextColor.DARK_RED));
             return true;
@@ -34,6 +41,17 @@ public class ViewAuctionCommand implements CommandExecutor {
             sender.sendMessage(Component.empty().content("Auction does not exist!").color(NamedTextColor.RED));
             return true;
         }
+
+        // BiddingGUIManager.windows is a hashmap of auction id -> Gui
+        BidGui gui = BiddingGUIManager.windows.get(uuid);
+
+        if (gui == null) {
+            player.sendMessage("need to make new gui - keys: " + BiddingGUIManager.windows.keySet().toString());
+            gui = new BidGui(this.plugin);
+            BiddingGUIManager.windows.put(uuid, gui);
+        }
+
+        gui.render(player);
 
         return true;
     }
