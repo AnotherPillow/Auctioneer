@@ -1,6 +1,7 @@
 package com.anotherpillow.auctioneer.item.start;
 
 import com.anotherpillow.auctioneer.Auctioneer;
+import com.anotherpillow.auctioneer.holder.StartGuiDataHolder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -12,9 +13,10 @@ import xyz.xenondevs.invui.item.impl.AbstractItem;
 
 import java.util.List;
 
-public abstract class LoopingItem<T extends Number> extends AbstractItem {
+public abstract class LoopingItem<T> extends AbstractItem {
 
     protected int index = 2;
+    protected final StartGuiDataHolder data;
 
     // Abstract methods that subclasses must implement
     protected abstract List<T> getPossibleValues();
@@ -22,6 +24,12 @@ public abstract class LoopingItem<T extends Number> extends AbstractItem {
     protected abstract String getDisplayName();
     protected abstract String getSelectedRow(int i);
     protected abstract String getUnselectedRow(int i);
+    protected abstract void updateSelected(T value);
+
+    public LoopingItem(StartGuiDataHolder data) {
+        super();
+        this.data = data;
+    }
 
     @Override
     public ItemProvider getItemProvider() {
@@ -45,6 +53,9 @@ public abstract class LoopingItem<T extends Number> extends AbstractItem {
         } else {
             index = Math.max(index - 1, 0);
         }
+
+        this.updateSelected(values.get(index));
+
         notifyWindows();
     }
 }

@@ -19,3 +19,12 @@ commands:
   upauction:
     description: Start an auction on held item.
     usage: /upauction
+  viewauction:
+    description: View/bid on an auction.
+    usage: /viewauction <uuid>
+  openauction:
+    description: View/bid on an auction.
+    usage: /viewauction <uuid>
+  bid:
+    description: View/bid on an auction.
+    usage: /viewauction <uuid>

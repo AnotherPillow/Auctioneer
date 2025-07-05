@@ -1,6 +1,7 @@
 package com.anotherpillow.auctioneer.item.start;
 
 import com.anotherpillow.auctioneer.Auctioneer;
+import com.anotherpillow.auctioneer.holder.StartGuiDataHolder;
 import org.bukkit.Material;
 
 import java.util.List;
@@ -44,6 +45,11 @@ public class InitialPriceItem extends LoopingItem<Integer> {
 
     private final Material ITEM_TYPE = Material.DIAMOND_BLOCK;
 
+    public InitialPriceItem(StartGuiDataHolder data) {
+        super(data);
+        data.setInitialPriceValue(this.POSSIBLE_VALUES.get(this.index));
+    }
+
     @Override
     protected List<Integer> getPossibleValues() {
         return POSSIBLE_VALUES;
@@ -67,5 +73,10 @@ public class InitialPriceItem extends LoopingItem<Integer> {
     @Override
     protected String getUnselectedRow(int i) {
         return "§7> §e " + Auctioneer.econ.format(POSSIBLE_VALUES.get(i));
+    }
+
+    @Override
+    protected void updateSelected(Integer value) {
+        this.data.setInitialPriceValue(value);
     }
 }

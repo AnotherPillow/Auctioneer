@@ -20,6 +20,10 @@ public class CommandManager {
         this.commands.put("startbids", new StartCommand(plugin));
         this.commands.put("upauction", new StartCommand(plugin));
 
+        this.commands.put("viewauction", new ViewAuctionCommand(plugin));
+        this.commands.put("openauction", new ViewAuctionCommand(plugin));
+        this.commands.put("bid", new ViewAuctionCommand(plugin));
+
         this.RegisterPluginCommands(plugin);
     }
 

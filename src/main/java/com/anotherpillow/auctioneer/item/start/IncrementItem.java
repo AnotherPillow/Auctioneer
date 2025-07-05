@@ -1,6 +1,7 @@
 package com.anotherpillow.auctioneer.item.start;
 
 import com.anotherpillow.auctioneer.Auctioneer;
+import com.anotherpillow.auctioneer.holder.StartGuiDataHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,6 +22,7 @@ import java.util.List;
 public class IncrementItem extends LoopingItem<Double> {
 
     private final List<Double> POSSIBLE_VALUES = List.of(
+            0.5d,
             1d,
             2.5d,
             5d,
@@ -36,6 +38,11 @@ public class IncrementItem extends LoopingItem<Double> {
 
     private final Material ITEM_TYPE = Material.DIAMOND;
 
+    public IncrementItem(StartGuiDataHolder data) {
+        super(data);
+        data.setIncrementValue(this.POSSIBLE_VALUES.get(this.index));
+    }
+
     @Override
     protected List<Double> getPossibleValues() {
         return POSSIBLE_VALUES;
@@ -48,7 +55,7 @@ public class IncrementItem extends LoopingItem<Double> {
 
     @Override
     protected String getDisplayName() {
-        return "§8§lIncrement: §b§n" + POSSIBLE_VALUES.get(index) + "%";
+        return "§8§lBid Increment: §b§n" + POSSIBLE_VALUES.get(index) + "%";
     }
 
     @Override
@@ -59,5 +66,10 @@ public class IncrementItem extends LoopingItem<Double> {
     @Override
     protected String getUnselectedRow(int i) {
         return "§7> §e " + POSSIBLE_VALUES.get(i) + "%";
+    }
+
+    @Override
+    protected void updateSelected(Double value) {
+        this.data.setIncrementValue(value);
     }
 }
