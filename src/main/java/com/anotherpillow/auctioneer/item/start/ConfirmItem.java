@@ -119,9 +119,11 @@ public class ConfirmItem extends AbstractItem {
                     .color(NamedTextColor.GOLD)
             );
 
+            // todo: make it remove the item from hand
         }
 
-        notifyWindows(); // this will update the ItemStack that is displayed to the player
+
+        notifyWindows();
     }
 
 }

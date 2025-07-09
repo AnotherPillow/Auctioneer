@@ -2,6 +2,7 @@ package com.anotherpillow.auctioneer.commands;
 
 import com.anotherpillow.auctioneer.Auctioneer;
 import com.anotherpillow.auctioneer.db.AuctionManager;
+import com.anotherpillow.auctioneer.db.model.AuctionModel;
 import com.anotherpillow.auctioneer.gui.BidGui;
 import com.anotherpillow.auctioneer.gui.BiddingGUIManager;
 import com.anotherpillow.auctioneer.gui.StartGui;
@@ -44,10 +45,20 @@ public class ViewAuctionCommand implements CommandExecutor {
 
         // BiddingGUIManager.windows is a hashmap of auction id -> Gui
         BidGui gui = BiddingGUIManager.windows.get(uuid);
+        AuctionModel auction = AuctionManager.getAuction(uuid);
+
+        if (auction == null) {
+            sender.sendMessage(Component.empty().content("Auction does not exist!").color(NamedTextColor.RED));
+            return true;
+        }
+
+        if (0 >= auction.getTimeoutDate() - System.currentTimeMillis()) {
+            sender.sendMessage(Component.empty().content("That auction has expired!").color(NamedTextColor.RED));
+            return true;
+        };
 
         if (gui == null) {
-            player.sendMessage("need to make new gui - keys: " + BiddingGUIManager.windows.keySet().toString());
-            gui = new BidGui(this.plugin);
+            gui = new BidGui(this.plugin, auction);
             BiddingGUIManager.windows.put(uuid, gui);
         }
 

@@ -1,8 +1,11 @@
 package com.anotherpillow.auctioneer.gui;
 
 import com.anotherpillow.auctioneer.Auctioneer;
+import com.anotherpillow.auctioneer.db.model.AuctionModel;
 import com.anotherpillow.auctioneer.holder.StartGuiDataHolder;
+import com.anotherpillow.auctioneer.item.bidder.BidLevelItem;
 import com.anotherpillow.auctioneer.item.bidder.CountItem;
+import com.anotherpillow.auctioneer.item.bidder.CountdownItem;
 import com.anotherpillow.auctioneer.item.start.ConfirmItem;
 import com.anotherpillow.auctioneer.item.start.IncrementItem;
 import com.anotherpillow.auctioneer.item.start.InitialPriceItem;
@@ -19,22 +22,23 @@ import xyz.xenondevs.invui.item.impl.SimpleItem;
 import xyz.xenondevs.invui.window.Window;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class BidGui {
 
-    private int SLOTS_PER_PAGE = 29; // 29 letter s in the layout
-    private HashMap<Integer, Point> ITEM_COORDINATES = new HashMap<Integer, Point>();
-    private int OFFSET_PAGES = 0;
+    public int SLOTS_PER_PAGE = 29; // 29 letter s in the layout
+    public HashMap<Integer, Point> ITEM_COORDINATES = new HashMap<Integer, Point>();
+    public int OFFSET_PAGES = 0;
+    public List<BidLevelItem> currentPageBidItems = new ArrayList<>();
 
     private Auctioneer plugin = null;
     private Gui gui = null;
+    private AuctionModel auction = null;
 
-    public BidGui(Auctioneer plugin) {
+    public BidGui(Auctioneer plugin, AuctionModel auction) {
 //        ConfigurationSection modes = plugin.getConfig().getConfigurationSection("modes");
 
         // I am so good at code that is super duper readable
@@ -68,50 +72,92 @@ public class BidGui {
         ITEM_COORDINATES.put(27, new Point(8, 4));
         ITEM_COORDINATES.put(28, new Point(8, 5));
 
+        this.auction = auction;
         this.plugin = plugin;
-        this.gui = this.createGui();
 
+        this.gui = this.createGui();
+    }
+
+    private long getRemainingTime() {
+        long now = System.currentTimeMillis();
+
+        return this.auction.getTimeoutDate() - now;
+    }
+
+    private void populateGui(Gui gui) {
+        for (int i = 0; i < SLOTS_PER_PAGE; ++i) {
+            int oi = i + (OFFSET_PAGES * SLOTS_PER_PAGE);
+            Point xy = ITEM_COORDINATES.get(i);
+//            Item item = new SimpleItem(
+//                    new ItemBuilder(
+//                            Material.GOLD_INGOT
+//                    ).setDisplayName(Auctioneer.econ.format(
+////                            this.auction.getInitialPrice() + (this.auction.getIncrementPercent() * oi)
+//                            // percent is stored in db as x not 0.x, so divide by 100 and do P(i+1)^t
+//                            this.auction.getInitialPrice() * Math.pow(this.auction.getIncrementPercent() / 100 + 1, oi)
+//                    ))
+//            );
+
+//            System.out.println("[Auctioneer] BidGui:100> i: " + i + " oi: " + oi + " xy: " + (xy == null ? null : xy.toString()) + " item: " + item.getItemProvider().get().getType().toString());
+
+
+            BidLevelItem item = new BidLevelItem(
+                    i, oi, xy,
+                    this.auction.getInitialPrice() * Math.pow(this.auction.getIncrementPercent() / 100 + 1, oi), this
+            );
+            gui.setItem(xy.x, xy.y, item);
+            currentPageBidItems.add(item);
+        }
     }
 
     public Gui createGui() {
-        List<Item> items = Arrays.stream(Material.values())
-                .filter(material -> !material.isAir() && material.isItem())
-                .map(material -> new SimpleItem(new ItemBuilder(material)))
-                .collect(Collectors.toList());
+        if (0 >= getRemainingTime()) return null;
 
         Gui.Builder.Normal builder = Gui.normal() // Creates the GuiBuilder for a normal GUI
                 .setStructure(
-                        "# # # # C # # # #",
+                        "t # p # b # i # C",
                         "s # s s s # s s s",
                         "s # s # s # s # s",
                         "s # s # s # s # s",
                         "s # s # s # s # s",
                         "s s s # s s s # s")
                 .addIngredient('#', new SimpleItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName("")))
+                .addIngredient('b', this.auction.getOfferedItem())
                 .addIngredient('C', new CountItem())
+                .addIngredient('t', new CountdownItem(this.auction.getTimeoutDate(), this))
                 ;
 
         Gui gui = builder.build();
 
-        for (int i = 0; i < SLOTS_PER_PAGE; ++i) {
-            int oi = i + (OFFSET_PAGES * SLOTS_PER_PAGE);
-            Point xy = ITEM_COORDINATES.get(i);
-            Item item = items.get(oi);
-
-            System.out.println("[Auctioneer] BidGui:100> i: " + i + " oi: " + oi + " xy: " + (xy == null ? null : xy.toString()) + " item: " + item.getItemProvider().get().getType().toString());
-
-            gui.setItem(xy.x, xy.y, item);
-        }
+        populateGui(gui);
 
         return gui;
     }
 
+    public void onBid(int index) {
+        if (index == SLOTS_PER_PAGE - 1) {
+            this.OFFSET_PAGES++;
+            this.currentPageBidItems.clear();
+            populateGui(this.gui);
+        }
+    }
+
     public void render(Player player) {
+        if (0 >= getRemainingTime()) return;
+
         Window window = Window.single()
                 .setViewer(player)
                 .setTitle("Start an Auction")
                 .setGui(gui)
                 .build();
         window.open();
+    }
+
+    public void timerExpired() {
+        this.gui.findAllCurrentViewers().forEach((Player player) -> {
+            player.sendMessage("The auction expired! The winner is [insert name here]");
+            // if (player.getUniqueId() == UUID.fromString("")) {}
+        });
+        this.gui.closeForAllViewers();
     }
 }

@@ -1,6 +1,7 @@
 package com.anotherpillow.auctioneer.db;
 
 import com.anotherpillow.auctioneer.Auctioneer;
+import com.anotherpillow.auctioneer.db.model.AuctionModel;
 import com.anotherpillow.auctioneer.holder.StartGuiDataHolder;
 import org.bukkit.entity.Player;
 
@@ -29,5 +30,13 @@ public class AuctionManager {
 
     public static boolean auctionExists(String uuid) {
         return DatabaseManager.auctionExists(uuid);
+    }
+
+    public static AuctionModel getAuction(String uuid) {
+        try {
+            return DatabaseManager.getAuctionByUuid(uuid);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 }

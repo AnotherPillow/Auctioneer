@@ -1,6 +1,7 @@
 package com.anotherpillow.auctioneer.db;
 
 import com.anotherpillow.auctioneer.Auctioneer;
+import com.anotherpillow.auctioneer.db.model.AuctionModel;
 
 import java.sql.*;
 
@@ -67,5 +68,30 @@ public class DatabaseManager {
                 return rs.next();
             }
         } catch (SQLException e) { return false; }
+    }
+
+    public static AuctionModel getAuctionByUuid(String uuid) throws SQLException {
+        String sql = "SELECT uuid, authorUUID, authorNAME, " +
+                "incrementPercent, initialPrice, timeoutFormat, " +
+                "timeoutDate, offeredItemB64 FROM auctions WHERE uuid = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, uuid);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new AuctionModel(
+                            rs.getString("uuid"),
+                            rs.getString("authorUUID"),
+                            rs.getString("authorNAME"),
+                            rs.getDouble("incrementPercent"),
+                            rs.getInt("initialPrice"),
+                            rs.getString("timeoutFormat"),
+                            rs.getLong("timeoutDate"),
+                            rs.getString("offeredItemB64")
+                    );
+                } else return null;
+            }
+        }
     }
 }
