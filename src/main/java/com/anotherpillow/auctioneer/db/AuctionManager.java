@@ -39,4 +39,12 @@ public class AuctionManager {
             return null;
         }
     }
+
+    public static void updateTopBid(String auctionUUID, UUID topBidderUUID, String topBidderName, double topBidPrice) {
+        try {
+            DatabaseManager.updateTopBid(auctionUUID, topBidderUUID.toString(), topBidderName, topBidPrice);
+        } catch (SQLException e) {
+            return;
+        }
+    }
 }

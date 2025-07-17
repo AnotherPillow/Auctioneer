@@ -35,7 +35,9 @@ public class StartGui {
     public void render(Player player) {
         ItemStack held = player.getItemInHand();
         if (held.getType() == Material.AIR) {
-            player.sendMessage("hold an item please");
+            player.sendMessage(Component.empty()
+                    .content("Hold an item to put up for auction.")
+                    .color(NamedTextColor.RED));
             return;
         }
 

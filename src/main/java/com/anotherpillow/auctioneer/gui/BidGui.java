@@ -1,6 +1,8 @@
 package com.anotherpillow.auctioneer.gui;
 
 import com.anotherpillow.auctioneer.Auctioneer;
+import com.anotherpillow.auctioneer.db.AuctionManager;
+import com.anotherpillow.auctioneer.db.DatabaseManager;
 import com.anotherpillow.auctioneer.db.model.AuctionModel;
 import com.anotherpillow.auctioneer.holder.StartGuiDataHolder;
 import com.anotherpillow.auctioneer.item.bidder.BidLevelItem;
@@ -11,6 +13,7 @@ import com.anotherpillow.auctioneer.item.start.IncrementItem;
 import com.anotherpillow.auctioneer.item.start.InitialPriceItem;
 import com.anotherpillow.auctioneer.item.start.TimeoutItem;
 import com.anotherpillow.auctioneer.util.CosmeticItems;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -134,12 +137,15 @@ public class BidGui {
         return gui;
     }
 
-    public void onBid(int index) {
+    public void onBid(int index, String username, UUID uuid, double value) {
         if (index == SLOTS_PER_PAGE - 1) {
             this.OFFSET_PAGES++;
             this.currentPageBidItems.clear();
             populateGui(this.gui);
         }
+        AuctionManager.updateTopBid(this.auction.getUuid(), uuid, username, value);
+        // refresh bid data into model, unoptimised but won't fail
+        this.auction = AuctionManager.getAuction(this.auction.getUuid());
     }
 
     public void render(Player player) {
@@ -155,9 +161,11 @@ public class BidGui {
 
     public void timerExpired() {
         this.gui.findAllCurrentViewers().forEach((Player player) -> {
-            player.sendMessage("The auction expired! The winner is [insert name here]");
+            player.sendMessage("The auction expired! The winner is " + this.auction.getTopBidderName() +
+                    " with a price of " + Auctioneer.econ.format(this.auction.getTopBidPrice()));
             // if (player.getUniqueId() == UUID.fromString("")) {}
         });
+        Bukkit.getPlayer(this.auction.getTopBidderUUID()).getInventory().addItem(this.auction.getOfferedItem());
         this.gui.closeForAllViewers();
     }
 }

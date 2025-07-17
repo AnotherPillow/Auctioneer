@@ -3,6 +3,7 @@ package com.anotherpillow.auctioneer.db.model;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Base64;
+import java.util.UUID;
 
 public class AuctionModel {
     private final String uuid;
@@ -13,6 +14,9 @@ public class AuctionModel {
     private final String timeoutFormat;
     private final long timeoutDate;
     private final String offeredItemB64;
+    private final String topBidderUUID;
+    private final String topBidderName;
+    private final double topBidPrice;
 
     public AuctionModel(
             String uuid,
@@ -22,7 +26,10 @@ public class AuctionModel {
             int initialPrice,
             String timeoutFormat,
             long timeoutDate,
-            String offeredItemB64
+            String offeredItemB64,
+            String topBidderUUID,
+            String topBidderName,
+            double topBidPrice
     ) {
         this.uuid = uuid;
         this.authorUUID = authorUUID;
@@ -32,6 +39,9 @@ public class AuctionModel {
         this.timeoutFormat = timeoutFormat;
         this.timeoutDate = timeoutDate;
         this.offeredItemB64 = offeredItemB64;
+        this.topBidderUUID = topBidderUUID;
+        this.topBidderName = topBidderName;
+        this.topBidPrice = topBidPrice;
     }
 
     // Getters
@@ -49,4 +59,7 @@ public class AuctionModel {
 
         return ItemStack.deserializeBytes(b);
     };
+    public UUID getTopBidderUUID() { return UUID.fromString(this.topBidderUUID); }
+    public String getTopBidderName() { return this.topBidderName; }
+    public double getTopBidPrice() { return this.topBidPrice; }
 }

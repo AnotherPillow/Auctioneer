@@ -10,7 +10,7 @@ public class DatabaseManager {
 
     public static void connect() throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
-        connection = DriverManager.getConnection("jdbc:sqlite:plugins/auctioneer/database.db");
+        connection = DriverManager.getConnection("jdbc:sqlite:plugins/auctioneer/auctioneer-database.db");
     }
 
     public static void setupTables() throws SQLException {
@@ -19,10 +19,13 @@ public class DatabaseManager {
                 + "    authorUUID  TEXT NOT NULL,"
                 + "    authorNAME  TEXT NOT NULL,"
                 + "    incrementPercent  REAL NOT NULL,"
-                + "    initialPrice  INTEGER NOT NULL,"
+                + "    initialPrice  REAL NOT NULL,"
                 + "    timeoutFormat  TEXT NOT NULL,"
                 + "    timeoutDate  INTEGER NOT NULL,"
-                + "    offeredItemB64  TEXT NOT NULL"
+                + "    offeredItemB64  TEXT NOT NULL,"
+                + "    topBidderUUID  TEXT,"
+                + "    topBidderName  TEXT,"
+                + "    topBidPrice  REAL"
                 + ");";
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(sql);
@@ -34,7 +37,7 @@ public class DatabaseManager {
             String authorUUID,
             String authorName,
             double incrementPercent,
-            int initialPrice,
+            double initialPrice, // Changed to double
             String timeoutFormat,
             long timeoutDate,
             String offeredItemB64
@@ -44,18 +47,43 @@ public class DatabaseManager {
                         "    uuid, authorUUID, authorNAME," +
                         "    incrementPercent, initialPrice," +
                         "    timeoutFormat," +
-                        "    timeoutDate, offeredItemB64" +
-                        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+                        "    timeoutDate, offeredItemB64," +
+                        "    topBidderUUID, topBidderName, topBidPrice" +
+                        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, uuid);
             pstmt.setString(2, authorUUID);
             pstmt.setString(3, authorName);
             pstmt.setDouble(4, incrementPercent);
-            pstmt.setInt(5, initialPrice);
+            pstmt.setDouble(5, initialPrice); // Changed to setDouble
             pstmt.setString(6, timeoutFormat);
             pstmt.setLong(7, timeoutDate);
             pstmt.setString(8, offeredItemB64);
+            pstmt.setString(9, null);
+            pstmt.setString(10, null);
+            pstmt.setObject(11, null, java.sql.Types.REAL); // Changed to REAL
+            pstmt.executeUpdate();
+        }
+    }
+
+    public static void updateTopBid(
+            String auctionUUID,
+            String topBidderUUID,
+            String topBidderName,
+            double topBidPrice // Changed to double
+    ) throws SQLException {
+        String sql = "UPDATE auctions SET " +
+                "topBidderUUID = ?, " +
+                "topBidderName = ?, " +
+                "topBidPrice = ? " +
+                "WHERE uuid = ?;";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, topBidderUUID);
+            pstmt.setString(2, topBidderName);
+            pstmt.setDouble(3, topBidPrice); // Changed to setDouble
+            pstmt.setString(4, auctionUUID);
             pstmt.executeUpdate();
         }
     }
@@ -73,7 +101,7 @@ public class DatabaseManager {
     public static AuctionModel getAuctionByUuid(String uuid) throws SQLException {
         String sql = "SELECT uuid, authorUUID, authorNAME, " +
                 "incrementPercent, initialPrice, timeoutFormat, " +
-                "timeoutDate, offeredItemB64 FROM auctions WHERE uuid = ?";
+                "timeoutDate, offeredItemB64, topBidderUUID, topBidderName, topBidPrice FROM auctions WHERE uuid = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, uuid);
@@ -88,7 +116,10 @@ public class DatabaseManager {
                             rs.getInt("initialPrice"),
                             rs.getString("timeoutFormat"),
                             rs.getLong("timeoutDate"),
-                            rs.getString("offeredItemB64")
+                            rs.getString("offeredItemB64"),
+                            rs.getString("topBidderUUID"),
+                            rs.getString("topBidderName"),
+                            rs.getDouble("topBidPrice")
                     );
                 } else return null;
             }

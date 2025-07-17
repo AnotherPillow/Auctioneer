@@ -2,6 +2,9 @@ package com.anotherpillow.auctioneer.item.bidder;
 
 import com.anotherpillow.auctioneer.Auctioneer;
 import com.anotherpillow.auctioneer.gui.BidGui;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -62,12 +65,18 @@ public class BidLevelItem extends AbstractItem {
     @Override
     public void handleClick(@NotNull ClickType clickType, @NotNull Player player, @NotNull InventoryClickEvent event) {
         if (this.hasPlacedBid) return;
+        if (this.price > Auctioneer.econ.getBalance(player)) {
+            player.sendMessage(Component.empty()
+                    .content("You can't afford that!")
+                    .color(NamedTextColor.RED));
+            return;
+        }
 
         if (clickType.isLeftClick()) {
             this.hasPlacedBid = true;
             this.placedBidusername = player.getName();
             this.backfillSelected();
-            this.gui.onBid(this.index);
+            this.gui.onBid(this.index, player.getName(), player.getUniqueId(), this.price);
         }
 
         notifyWindows(); // this will update the ItemStack that is displayed to the player

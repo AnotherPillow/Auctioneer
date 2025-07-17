@@ -56,6 +56,8 @@ public class ConfirmItem extends AbstractItem {
 
         UUID submitUUID = AuctionManager.submitAuction(data, player);
         if (submitUUID != null) {
+            // empty main hand
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             for (Window window : getWindows()) {
                 window.close();
             }
