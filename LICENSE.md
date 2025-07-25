@@ -7,8 +7,8 @@ The content of this file, and this file only, are licensed under the CC-BY-SA-4.
 ## Source Code
 All Rights Reserved (c) 2025 AnotherPillow (https://pillow.rocks).
 
-The source code, asset files and everything contained in the root folder of the Github repository (https://github.com/anotherpillow/auctioneer) are All Rights Reserved (Copyright AnotherPillow, 2025)
-Any self-compiled binaries or .jar files made or generated from the original source code are also All Rights Reserved (c) AnotherPillow 2025.
+The source code, asset files and everything contained in the root folder of the Github repository (https://github.com/anotherpillow/auctioneer) are Copyright (c) AnotherPillow, 2025, All Rights Reserved.
+Any self-compiled binaries or .jar files made or generated from the original source code are also Copyright (c) AnotherPillow 2025, All Rights Reserved.
 
 ## Compiled releases and .jar files
 
