@@ -2,28 +2,16 @@ package com.anotherpillow.auctioneer.gui;
 
 import com.anotherpillow.auctioneer.Auctioneer;
 import com.anotherpillow.auctioneer.db.AuctionManager;
-import com.anotherpillow.auctioneer.db.DatabaseManager;
 import com.anotherpillow.auctioneer.db.model.AuctionModel;
-import com.anotherpillow.auctioneer.holder.StartGuiDataHolder;
 import com.anotherpillow.auctioneer.item.bidder.BidLevelItem;
-import com.anotherpillow.auctioneer.item.bidder.CountItem;
 import com.anotherpillow.auctioneer.item.bidder.CountdownItem;
-import com.anotherpillow.auctioneer.item.start.ConfirmItem;
-import com.anotherpillow.auctioneer.item.start.IncrementItem;
-import com.anotherpillow.auctioneer.item.start.InitialPriceItem;
-import com.anotherpillow.auctioneer.item.start.TimeoutItem;
-import com.anotherpillow.auctioneer.util.CosmeticItems;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import xyz.xenondevs.invui.gui.Gui;
-import xyz.xenondevs.invui.gui.structure.Markers;
-import xyz.xenondevs.invui.item.Item;
 import xyz.xenondevs.invui.item.builder.ItemBuilder;
 import xyz.xenondevs.invui.item.impl.SimpleItem;
 import xyz.xenondevs.invui.window.Window;
@@ -33,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class BidGui {
 
@@ -124,7 +110,7 @@ public class BidGui {
 
         Gui.Builder.Normal builder = Gui.normal() // Creates the GuiBuilder for a normal GUI
                 .setStructure(
-                        "t # p # b # i # C",
+                        "t # # # b # # # #",
                         "s # s s s # s s s",
                         "s # s # s # s # s",
                         "s # s # s # s # s",
@@ -132,7 +118,6 @@ public class BidGui {
                         "s s s # s s s # s")
                 .addIngredient('#', new SimpleItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName("")))
                 .addIngredient('b', this.auction.getOfferedItem())
-                .addIngredient('C', new CountItem())
                 .addIngredient('t', new CountdownItem(this.auction.getTimeoutDate(), this))
                 ;
 
