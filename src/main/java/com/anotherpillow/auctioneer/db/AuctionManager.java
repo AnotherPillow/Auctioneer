@@ -15,7 +15,7 @@ public class AuctionManager {
         UUID uid = UUID.randomUUID();
 
         try {
-            DatabaseManager.insertAuction(uid.toString(), player.getName(), player.getUniqueId().toString(),
+            DatabaseManager.insertAuction(uid.toString(), player.getUniqueId().toString(), player.getName(),
                     holder.getIncrementValue(), holder.getInitialPriceValue(), holder.getTimeoutValue().format(),
                     System.currentTimeMillis() + holder.getTimeoutValue().toMilliseconds(),
                     Base64.getEncoder().encodeToString(holder.getOfferedItem().serializeAsBytes())

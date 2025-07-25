@@ -13,6 +13,10 @@ import com.anotherpillow.auctioneer.item.start.IncrementItem;
 import com.anotherpillow.auctioneer.item.start.InitialPriceItem;
 import com.anotherpillow.auctioneer.item.start.TimeoutItem;
 import com.anotherpillow.auctioneer.util.CosmeticItems;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -25,8 +29,10 @@ import xyz.xenondevs.invui.item.impl.SimpleItem;
 import xyz.xenondevs.invui.window.Window;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -160,11 +166,40 @@ public class BidGui {
     }
 
     public void timerExpired() {
+        Component metaDisplayName = this.auction.getOfferedItem().getItemMeta().displayName();
+        Component displayName = metaDisplayName == null ?
+                Component.empty()
+                        .content(this.auction.getOfferedItem().getI18NDisplayName())
+                        .color(NamedTextColor.WHITE)
+                        .decorate(TextDecoration.UNDERLINED)
+                :
+                metaDisplayName;
+
         this.gui.findAllCurrentViewers().forEach((Player player) -> {
-            player.sendMessage("The auction expired! The winner is " + this.auction.getTopBidderName() +
+            if (player.getUniqueId() != this.auction.getTopBidderUUID())
+                player.sendMessage("The auction expired! The winner is " + this.auction.getTopBidderName() +
                     " with a price of " + Auctioneer.econ.format(this.auction.getTopBidPrice()));
             // if (player.getUniqueId() == UUID.fromString("")) {}
         });
+        Bukkit.getPlayer(this.auction.getTopBidderUUID()).sendMessage(Component.empty()
+                .append(
+                        Component.empty()
+                                .color(NamedTextColor.GREEN)
+                                .content("You won " + this.auction.getAuthorName() + "'s auction for ")
+                )
+                .append(displayName)
+                .append(
+                        Component.empty()
+                                .color(NamedTextColor.GREEN)
+                                .content(" with a bid of ")
+                )
+                .append(
+                        Component.empty()
+                                .color(NamedTextColor.DARK_GRAY)
+                                .content(Auctioneer.econ.format(this.auction.getTopBidPrice()))
+                                .decorate(TextDecoration.BOLD)
+                )
+        );
         Bukkit.getPlayer(this.auction.getTopBidderUUID()).getInventory().addItem(this.auction.getOfferedItem());
         this.gui.closeForAllViewers();
     }

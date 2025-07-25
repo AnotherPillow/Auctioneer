@@ -54,6 +54,14 @@ public class ConfirmItem extends AbstractItem {
 //        player.sendMessage("initial price: " + data.getInitialPriceValue());
 //        player.sendMessage("offered item: " + Base64.getEncoder().encodeToString(data.getOfferedItem().serializeAsBytes()));
 
+        // if the user has swapped out main hand, make it not submit
+        if (!player.getInventory().getItemInMainHand().equals(data.getOfferedItem())) {
+            player.sendMessage(Component.empty().content("Item change detected, can't submit!").color(NamedTextColor.RED));
+            for (Window window : getWindows()) {
+                window.close();
+            }
+            return;
+        }
         UUID submitUUID = AuctionManager.submitAuction(data, player);
         if (submitUUID != null) {
             // empty main hand
@@ -120,8 +128,6 @@ public class ConfirmItem extends AbstractItem {
                     .decorate(TextDecoration.STRIKETHROUGH)
                     .color(NamedTextColor.GOLD)
             );
-
-            // todo: make it remove the item from hand
         }
 
 
