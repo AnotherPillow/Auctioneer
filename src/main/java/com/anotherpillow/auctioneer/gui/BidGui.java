@@ -1,3 +1,8 @@
+/**
+ * Auctioneer source code Copyright (c) AnotherPillow 2025. All Rights Reserved
+ * See `License.md` in the root of this repository for full details.
+ */
+
 package com.anotherpillow.auctioneer.gui;
 
 import com.anotherpillow.auctioneer.Auctioneer;
@@ -34,8 +39,6 @@ public class BidGui {
     private AuctionModel auction = null;
 
     public BidGui(Auctioneer plugin, AuctionModel auction) {
-//        ConfigurationSection modes = plugin.getConfig().getConfigurationSection("modes");
-
         // I am so good at code that is super duper readable
         ITEM_COORDINATES.put(0, new Point(0, 1));
         ITEM_COORDINATES.put(1, new Point(0, 2));
@@ -83,18 +86,6 @@ public class BidGui {
         for (int i = 0; i < SLOTS_PER_PAGE; ++i) {
             int oi = i + (OFFSET_PAGES * SLOTS_PER_PAGE);
             Point xy = ITEM_COORDINATES.get(i);
-//            Item item = new SimpleItem(
-//                    new ItemBuilder(
-//                            Material.GOLD_INGOT
-//                    ).setDisplayName(Auctioneer.econ.format(
-////                            this.auction.getInitialPrice() + (this.auction.getIncrementPercent() * oi)
-//                            // percent is stored in db as x not 0.x, so divide by 100 and do P(i+1)^t
-//                            this.auction.getInitialPrice() * Math.pow(this.auction.getIncrementPercent() / 100 + 1, oi)
-//                    ))
-//            );
-
-//            System.out.println("[Auctioneer] BidGui:100> i: " + i + " oi: " + oi + " xy: " + (xy == null ? null : xy.toString()) + " item: " + item.getItemProvider().get().getType().toString());
-
 
             BidLevelItem item = new BidLevelItem(
                     i, oi, xy,
