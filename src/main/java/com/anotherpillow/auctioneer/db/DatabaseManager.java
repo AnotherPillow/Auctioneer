@@ -15,7 +15,7 @@ public class DatabaseManager {
 
     public static void connect() throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
-        connection = DriverManager.getConnection("jdbc:sqlite:plugins/auctioneer/auctioneer-database.db");
+        connection = DriverManager.getConnection("jdbc:sqlite:plugins/Auctioneer/auctioneer-database.db");
     }
 
     public static void setupTables() throws SQLException {
