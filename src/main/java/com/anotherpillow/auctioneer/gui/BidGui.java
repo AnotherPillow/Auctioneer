@@ -135,7 +135,7 @@ public class BidGui {
 
         Window window = Window.single()
                 .setViewer(player)
-                .setTitle("Start an Auction")
+                .setTitle("Bid")
                 .setGui(gui)
                 .build();
         window.open();
@@ -151,32 +151,38 @@ public class BidGui {
                 :
                 metaDisplayName;
 
-        this.gui.findAllCurrentViewers().forEach((Player player) -> {
-            if (player.getUniqueId() != this.auction.getTopBidderUUID())
-                player.sendMessage("The auction expired! The winner is " + this.auction.getTopBidderName() +
-                    " with a price of " + Auctioneer.econ.format(this.auction.getTopBidPrice()));
-            // if (player.getUniqueId() == UUID.fromString("")) {}
-        });
-        Bukkit.getPlayer(this.auction.getTopBidderUUID()).sendMessage(Component.empty()
-                .append(
-                        Component.empty()
-                                .color(NamedTextColor.GREEN)
-                                .content("You won " + this.auction.getAuthorName() + "'s auction for ")
-                )
-                .append(displayName)
-                .append(
-                        Component.empty()
-                                .color(NamedTextColor.GREEN)
-                                .content(" with a bid of ")
-                )
-                .append(
-                        Component.empty()
-                                .color(NamedTextColor.DARK_GRAY)
-                                .content(Auctioneer.econ.format(this.auction.getTopBidPrice()))
-                                .decorate(TextDecoration.BOLD)
-                )
-        );
-        Bukkit.getPlayer(this.auction.getTopBidderUUID()).getInventory().addItem(this.auction.getOfferedItem());
+        UUID topBidder = this.auction.getTopBidderUUID();
+
+        if (topBidder != null) {
+            this.gui.findAllCurrentViewers().forEach((Player player) -> {
+                if (player.getUniqueId() != topBidder)
+                    player.sendMessage("The auction expired! The winner is " + this.auction.getTopBidderName() +
+                            " with a price of " + Auctioneer.econ.format(this.auction.getTopBidPrice()));
+                // if (player.getUniqueId() == UUID.fromString("")) {}
+            });
+            Bukkit.getPlayer(topBidder).sendMessage(Component.empty()
+                    .append(
+                            Component.empty()
+                                    .color(NamedTextColor.GREEN)
+                                    .content("You won " + this.auction.getAuthorName() + "'s auction for ")
+                    )
+                    .append(displayName)
+                    .append(
+                            Component.empty()
+                                    .color(NamedTextColor.GREEN)
+                                    .content(" with a bid of ")
+                    )
+                    .append(
+                            Component.empty()
+                                    .color(NamedTextColor.DARK_GRAY)
+                                    .content(Auctioneer.econ.format(this.auction.getTopBidPrice()))
+                                    .decorate(TextDecoration.BOLD)
+                    )
+            );
+            Bukkit.getPlayer(this.auction.getTopBidderUUID()).getInventory().addItem(this.auction.getOfferedItem());
+        }
+
+
         this.gui.closeForAllViewers();
     }
 }

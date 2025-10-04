@@ -40,7 +40,7 @@ public class CountdownItem extends AutoUpdateItem {
     public ItemProvider getItemProvider() {
         if (this.isExpired) return null;
 
-        long remaining =this.getRemainingTime();
+        long remaining = this.getRemainingTime();
         if (0 >= remaining) {
             this.isExpired = true;
             this.bidGui.timerExpired();

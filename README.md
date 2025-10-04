@@ -6,6 +6,13 @@ A 1.19.2 plugin to allow players to auction items for [Vault](https://github.com
 
 Full details can be found in [LICENSE.md](LICENSE.md)
 
+## Showcase
+
+![the UI to start an auction for 15 maps](marketing/start-bid-ui.png)
+![the started an auction message is displayed in chat](marketing/started-auction.png)
+![the bidding UI showing some gold blocks enchanted at ~40k](marketing/bidding-ui.png)
+![the chat output when an auction is won](marketing/chat-win.png)
+
 ## Installation
 
 1. Be aware of the license terms and ensure you are not in violation of them.

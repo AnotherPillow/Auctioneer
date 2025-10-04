@@ -64,7 +64,7 @@ public class AuctionModel {
 
         return ItemStack.deserializeBytes(b);
     };
-    public UUID getTopBidderUUID() { return UUID.fromString(this.topBidderUUID); }
+    public UUID getTopBidderUUID() { return this.topBidderUUID == null ? null : UUID.fromString(this.topBidderUUID); }
     public String getTopBidderName() { return this.topBidderName; }
     public double getTopBidPrice() { return this.topBidPrice; }
 }
