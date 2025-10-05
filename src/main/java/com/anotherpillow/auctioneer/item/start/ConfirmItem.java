@@ -69,6 +69,7 @@ public class ConfirmItem extends AbstractItem {
         }
         UUID submitUUID = AuctionManager.submitAuction(data, player);
         if (submitUUID != null) {
+            Auctioneer.econ.withdrawPlayer(player, Auctioneer.config.getInt("config.listing-price"));
             // empty main hand
             player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             for (Window window : getWindows()) {

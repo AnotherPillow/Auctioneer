@@ -76,6 +76,7 @@ public final class Auctioneer extends JavaPlugin {
             return false;
         }
         econ = rsp.getProvider();
+        logger.info("set up with economy: " + econ.getName());
         return econ != null;
     }
 }

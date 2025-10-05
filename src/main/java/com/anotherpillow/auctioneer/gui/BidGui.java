@@ -13,8 +13,10 @@ import com.anotherpillow.auctioneer.item.bidder.CountdownItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import xyz.xenondevs.invui.gui.Gui;
 import xyz.xenondevs.invui.item.builder.ItemBuilder;
@@ -22,10 +24,8 @@ import xyz.xenondevs.invui.item.impl.SimpleItem;
 import xyz.xenondevs.invui.window.Window;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
 public class BidGui {
 
@@ -154,34 +154,70 @@ public class BidGui {
         UUID topBidder = this.auction.getTopBidderUUID();
 
         if (topBidder != null) {
+            System.out.println("top bidder uuid? " + topBidder.toString());
+
             this.gui.findAllCurrentViewers().forEach((Player player) -> {
-                if (player.getUniqueId() != topBidder)
+                if (!Objects.equals(player.getUniqueId().toString(), topBidder.toString()))
                     player.sendMessage("The auction expired! The winner is " + this.auction.getTopBidderName() +
                             " with a price of " + Auctioneer.econ.format(this.auction.getTopBidPrice()));
-                // if (player.getUniqueId() == UUID.fromString("")) {}
-            });
-            Bukkit.getPlayer(topBidder).sendMessage(Component.empty()
-                    .append(
-                            Component.empty()
-                                    .color(NamedTextColor.GREEN)
-                                    .content("You won " + this.auction.getAuthorName() + "'s auction for ")
-                    )
-                    .append(displayName)
-                    .append(
-                            Component.empty()
-                                    .color(NamedTextColor.GREEN)
-                                    .content(" with a bid of ")
-                    )
-                    .append(
-                            Component.empty()
-                                    .color(NamedTextColor.DARK_GRAY)
-                                    .content(Auctioneer.econ.format(this.auction.getTopBidPrice()))
-                                    .decorate(TextDecoration.BOLD)
-                    )
-            );
-            Bukkit.getPlayer(this.auction.getTopBidderUUID()).getInventory().addItem(this.auction.getOfferedItem());
-        }
+                // done in looop because for some reason it wont work oterhwise
+                else {
 
+                    if (!Auctioneer.econ.hasAccount(player)) {
+                        Auctioneer.econ.createPlayerAccount(player);
+                    }
+
+                    EconomyResponse resp = Auctioneer.econ.withdrawPlayer(player, this.auction.getTopBidPrice());
+                    if (resp == null || resp.type != EconomyResponse.ResponseType.SUCCESS) {
+                        String reason = (resp == null) ? "No response from economy." : resp.errorMessage;
+                        player.sendMessage(Component.text(
+                                "Payment failed: " + reason, NamedTextColor.RED));
+                        // Optionally log
+                        Bukkit.getLogger().warning("[Auctioneer] Withdraw failed for "
+                                + player.getName() + " amount=" + this.auction.getTopBidPrice() + " reason=" + reason);
+                        return;
+                    }
+                    player.sendMessage(Component.empty()
+                            .append(
+                                    Component.empty()
+                                            .color(NamedTextColor.GREEN)
+                                            .content("You won " + this.auction.getAuthorName() + "'s auction for ")
+                            )
+                            .append(displayName)
+                            .append(
+                                    Component.empty()
+                                            .color(NamedTextColor.GREEN)
+                                            .content(" with a bid of ")
+                            )
+                            .append(
+                                    Component.empty()
+                                            .color(NamedTextColor.DARK_GRAY)
+                                            .content(Auctioneer.econ.format(this.auction.getTopBidPrice()))
+                                            .decorate(TextDecoration.BOLD)
+                            )
+                    );
+
+                    player.getInventory().addItem(this.auction.getOfferedItem());
+                }
+            });
+
+
+            // WHY DOES NEITHER OF THESE WORK?????
+            Player onlineAuthorPlayer = Bukkit.getPlayer(this.auction.getAuthorUUID());
+            OfflinePlayer offlineAuthorPlayer = Bukkit.getOfflinePlayer(this.auction.getAuthorUUID());
+
+            Auctioneer.econ.depositPlayer(offlineAuthorPlayer, this.auction.getTopBidPrice());
+
+            if (onlineAuthorPlayer != null) {
+                onlineAuthorPlayer.sendMessage(Component.empty()
+                        .color(NamedTextColor.GREEN)
+                        .content("You have received " + this.auction.getTopBidPrice() + " from your auction!")
+                );
+            }
+
+
+
+        }
 
         this.gui.closeForAllViewers();
     }
