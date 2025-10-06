@@ -1,2 +1,3 @@
 config:
   listing-price: 0
+  do-broadcast: true

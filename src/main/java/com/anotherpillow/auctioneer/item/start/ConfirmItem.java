@@ -84,56 +84,58 @@ public class ConfirmItem extends AbstractItem {
                     :
                     metaDisplayName;
 
-            Bukkit.broadcast(Component.empty()
-                    .content("=".repeat(40))
-                    .decorate(TextDecoration.STRIKETHROUGH)
-                    .color(NamedTextColor.GOLD)
-            );
-            Bukkit.broadcast(Component.empty().content("|").color(NamedTextColor.DARK_GRAY));
-            Bukkit.broadcast(Component.empty()
-                    .append(Component.empty().content("| ").color(NamedTextColor.DARK_GRAY))
-                    .append(Component.empty()
-                                    .content(player.getName())
-                                    .decorate(TextDecoration.BOLD)
-                                    .color(NamedTextColor.GREEN)
-                            )
-                    .append(Component.empty()
-                                    .content(" just started an auction for a ")
-                    )
-                    .append(displayName.hoverEvent(data.getOfferedItem().asHoverEvent()))
-                    .clickEvent(ClickEvent.runCommand("/auctioneer:viewauction " + submitUUID))
-            );
-            Bukkit.broadcast(Component.empty().content("|").color(NamedTextColor.DARK_GRAY));
-            Bukkit.broadcast(Component.empty()
-                    .append(Component.empty().content("| ").color(NamedTextColor.DARK_GRAY))
-                    .append(Component.empty()
-                            .content("Time remaining: ")
-                            .color(NamedTextColor.GRAY)
-                    )
-                    .append(Component.empty()
-                            .content(data.getTimeoutValue().format())
-                            .color(NamedTextColor.DARK_GREEN)
-                    )
-                    .append(Component.empty()
-                            .content(" - ")
-                            .color(NamedTextColor.DARK_GRAY)
-                    )
-                    .append(Component.empty()
-                            .content("Initial Cost: ")
-                            .color(NamedTextColor.GRAY)
-                    )
-                    .append(Component.empty()
-                            .content(Auctioneer.econ.format(data.getInitialPriceValue()))
-                            .color(NamedTextColor.DARK_GREEN)
-                    )
-                    .clickEvent(ClickEvent.runCommand("/auctioneer:viewauction " + submitUUID))
-            );
-            Bukkit.broadcast(Component.empty().content("|").color(NamedTextColor.DARK_GRAY));
-            Bukkit.broadcast(Component.empty()
-                    .content("=".repeat(40))
-                    .decorate(TextDecoration.STRIKETHROUGH)
-                    .color(NamedTextColor.GOLD)
-            );
+            if (Auctioneer.config.getBoolean("config.do-broadcast")) {
+                Bukkit.broadcast(Component.empty()
+                        .content("=".repeat(40))
+                        .decorate(TextDecoration.STRIKETHROUGH)
+                        .color(NamedTextColor.GOLD)
+                );
+                Bukkit.broadcast(Component.empty().content("|").color(NamedTextColor.DARK_GRAY));
+                Bukkit.broadcast(Component.empty()
+                        .append(Component.empty().content("| ").color(NamedTextColor.DARK_GRAY))
+                        .append(Component.empty()
+                                .content(player.getName())
+                                .decorate(TextDecoration.BOLD)
+                                .color(NamedTextColor.GREEN)
+                        )
+                        .append(Component.empty()
+                                .content(" just started an auction for a ")
+                        )
+                        .append(displayName.hoverEvent(data.getOfferedItem().asHoverEvent()))
+                        .clickEvent(ClickEvent.runCommand("/auctioneer:viewauction " + submitUUID))
+                );
+                Bukkit.broadcast(Component.empty().content("|").color(NamedTextColor.DARK_GRAY));
+                Bukkit.broadcast(Component.empty()
+                        .append(Component.empty().content("| ").color(NamedTextColor.DARK_GRAY))
+                        .append(Component.empty()
+                                .content("Time remaining: ")
+                                .color(NamedTextColor.GRAY)
+                        )
+                        .append(Component.empty()
+                                .content(data.getTimeoutValue().format())
+                                .color(NamedTextColor.DARK_GREEN)
+                        )
+                        .append(Component.empty()
+                                .content(" - ")
+                                .color(NamedTextColor.DARK_GRAY)
+                        )
+                        .append(Component.empty()
+                                .content("Initial Cost: ")
+                                .color(NamedTextColor.GRAY)
+                        )
+                        .append(Component.empty()
+                                .content(Auctioneer.econ.format(data.getInitialPriceValue()))
+                                .color(NamedTextColor.DARK_GREEN)
+                        )
+                        .clickEvent(ClickEvent.runCommand("/auctioneer:viewauction " + submitUUID))
+                );
+                Bukkit.broadcast(Component.empty().content("|").color(NamedTextColor.DARK_GRAY));
+                Bukkit.broadcast(Component.empty()
+                        .content("=".repeat(40))
+                        .decorate(TextDecoration.STRIKETHROUGH)
+                        .color(NamedTextColor.GOLD)
+                );
+            }
         }
 
 
