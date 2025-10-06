@@ -202,16 +202,15 @@ public class BidGui {
             });
 
 
-            // WHY DOES NEITHER OF THESE WORK?????
-            Player onlineAuthorPlayer = Bukkit.getPlayer(this.auction.getAuthorUUID());
-            OfflinePlayer offlineAuthorPlayer = Bukkit.getOfflinePlayer(this.auction.getAuthorUUID());
+            Player onlineAuthorPlayer = Bukkit.getPlayer(this.auction.getAuthorName());
+            OfflinePlayer offlineAuthorPlayer = Bukkit.getOfflinePlayer(this.auction.getAuthorName());
 
             Auctioneer.econ.depositPlayer(offlineAuthorPlayer, this.auction.getTopBidPrice());
 
             if (onlineAuthorPlayer != null) {
                 onlineAuthorPlayer.sendMessage(Component.empty()
                         .color(NamedTextColor.GREEN)
-                        .content("You have received " + this.auction.getTopBidPrice() + " from your auction!")
+                        .content("You have received " + Auctioneer.econ.format(this.auction.getTopBidPrice()) + " from your auction!")
                 );
             }
 
