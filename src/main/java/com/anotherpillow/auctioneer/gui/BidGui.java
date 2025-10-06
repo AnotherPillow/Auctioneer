@@ -10,6 +10,7 @@ import com.anotherpillow.auctioneer.db.AuctionManager;
 import com.anotherpillow.auctioneer.db.model.AuctionModel;
 import com.anotherpillow.auctioneer.item.bidder.BidLevelItem;
 import com.anotherpillow.auctioneer.item.bidder.CountdownItem;
+import com.anotherpillow.auctioneer.util.Conversion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -37,6 +38,8 @@ public class BidGui {
     private Auctioneer plugin = null;
     private Gui gui = null;
     private AuctionModel auction = null;
+
+    private boolean isAlreadyExpired = false;
 
     public BidGui(Auctioneer plugin, AuctionModel auction) {
         // I am so good at code that is super duper readable
@@ -116,6 +119,9 @@ public class BidGui {
 
         populateGui(gui);
 
+        // catch if it isn't counting (no viewers, i think?)
+        Bukkit.getScheduler().runTaskLater(this.plugin, this::timerExpired, Conversion.ticksUntil(this.auction.getTimeoutDate()) + 20);
+
         return gui;
     }
 
@@ -142,6 +148,8 @@ public class BidGui {
     }
 
     public void timerExpired() {
+        if (isAlreadyExpired) return;
+        isAlreadyExpired = true;
         Component metaDisplayName = this.auction.getOfferedItem().getItemMeta().displayName();
         Component displayName = metaDisplayName == null ?
                 Component.empty()
@@ -160,47 +168,46 @@ public class BidGui {
                 if (!Objects.equals(player.getUniqueId().toString(), topBidder.toString()))
                     player.sendMessage("The auction expired! The winner is " + this.auction.getTopBidderName() +
                             " with a price of " + Auctioneer.econ.format(this.auction.getTopBidPrice()));
-                // done in looop because for some reason it wont work oterhwise
-                else {
-
-                    if (!Auctioneer.econ.hasAccount(player)) {
-                        Auctioneer.econ.createPlayerAccount(player);
-                    }
-
-                    EconomyResponse resp = Auctioneer.econ.withdrawPlayer(player, this.auction.getTopBidPrice());
-                    if (resp == null || resp.type != EconomyResponse.ResponseType.SUCCESS) {
-                        String reason = (resp == null) ? "No response from economy." : resp.errorMessage;
-                        player.sendMessage(Component.text(
-                                "Payment failed: " + reason, NamedTextColor.RED));
-                        // Optionally log
-                        Bukkit.getLogger().warning("[Auctioneer] Withdraw failed for "
-                                + player.getName() + " amount=" + this.auction.getTopBidPrice() + " reason=" + reason);
-                        return;
-                    }
-                    player.sendMessage(Component.empty()
-                            .append(
-                                    Component.empty()
-                                            .color(NamedTextColor.GREEN)
-                                            .content("You won " + this.auction.getAuthorName() + "'s auction for ")
-                            )
-                            .append(displayName)
-                            .append(
-                                    Component.empty()
-                                            .color(NamedTextColor.GREEN)
-                                            .content(" with a bid of ")
-                            )
-                            .append(
-                                    Component.empty()
-                                            .color(NamedTextColor.DARK_GRAY)
-                                            .content(Auctioneer.econ.format(this.auction.getTopBidPrice()))
-                                            .decorate(TextDecoration.BOLD)
-                            )
-                    );
-
-                    player.getInventory().addItem(this.auction.getOfferedItem());
-                }
             });
 
+            Player onlineBidderPlayer = Bukkit.getPlayer(this.auction.getTopBidderName());
+            OfflinePlayer offlineBidderPlayer = Bukkit.getOfflinePlayer(this.auction.getTopBidderName());
+
+            if (!Auctioneer.econ.hasAccount(offlineBidderPlayer)) {
+                Auctioneer.econ.createPlayerAccount(offlineBidderPlayer);
+            }
+
+            EconomyResponse resp = Auctioneer.econ.withdrawPlayer(offlineBidderPlayer, this.auction.getTopBidPrice());
+            if (resp == null || resp.type != EconomyResponse.ResponseType.SUCCESS) {
+                String reason = (resp == null) ? "No response from economy." : resp.errorMessage;
+                onlineBidderPlayer.sendMessage(Component.text(
+                        "Payment failed: " + reason, NamedTextColor.RED));
+                // Optionally log
+                Bukkit.getLogger().warning("[Auctioneer] Withdraw failed for "
+                        + offlineBidderPlayer.getName() + " amount=" + this.auction.getTopBidPrice() + " reason=" + reason);
+                return;
+            }
+            onlineBidderPlayer.sendMessage(Component.empty()
+                    .append(
+                            Component.empty()
+                                    .color(NamedTextColor.GREEN)
+                                    .content("You won " + this.auction.getAuthorName() + "'s auction for ")
+                    )
+                    .append(displayName)
+                    .append(
+                            Component.empty()
+                                    .color(NamedTextColor.GREEN)
+                                    .content(" with a bid of ")
+                    )
+                    .append(
+                            Component.empty()
+                                    .color(NamedTextColor.DARK_GRAY)
+                                    .content(Auctioneer.econ.format(this.auction.getTopBidPrice()))
+                                    .decorate(TextDecoration.BOLD)
+                    )
+            );
+
+            onlineBidderPlayer.getInventory().addItem(this.auction.getOfferedItem());
 
             Player onlineAuthorPlayer = Bukkit.getPlayer(this.auction.getAuthorName());
             OfflinePlayer offlineAuthorPlayer = Bukkit.getOfflinePlayer(this.auction.getAuthorName());
