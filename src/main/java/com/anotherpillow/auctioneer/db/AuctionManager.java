@@ -5,13 +5,13 @@
 
 package com.anotherpillow.auctioneer.db;
 
-import com.anotherpillow.auctioneer.Auctioneer;
 import com.anotherpillow.auctioneer.db.model.AuctionModel;
 import com.anotherpillow.auctioneer.holder.StartGuiDataHolder;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 public class AuctionManager {
@@ -50,6 +50,14 @@ public class AuctionManager {
             DatabaseManager.updateTopBid(auctionUUID, topBidderUUID.toString(), topBidderName, topBidPrice);
         } catch (SQLException e) {
             return;
+        }
+    }
+
+    public static List<AuctionModel> getActiveAuctions() {
+        try {
+            return DatabaseManager.getActiveAuctions();
+        } catch (SQLException e) {
+            return null;
         }
     }
 }

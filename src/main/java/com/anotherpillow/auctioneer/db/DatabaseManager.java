@@ -9,6 +9,8 @@ import com.anotherpillow.auctioneer.Auctioneer;
 import com.anotherpillow.auctioneer.db.model.AuctionModel;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager {
     public static Connection connection;
@@ -129,5 +131,41 @@ public class DatabaseManager {
                 } else return null;
             }
         }
+    }
+
+    public static List<AuctionModel> getActiveAuctions() throws SQLException {
+        long now = System.currentTimeMillis();
+        String sql = "SELECT uuid, authorUUID, authorNAME, " +
+                "incrementPercent, initialPrice, timeoutFormat, " +
+                "timeoutDate, offeredItemB64, topBidderUUID, topBidderName, topBidPrice " +
+                "FROM auctions " +
+                "WHERE timeoutDate > ? " +
+                "ORDER BY timeoutDate ASC;";
+
+        List<AuctionModel> results = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setLong(1, now);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    AuctionModel model = new AuctionModel(
+                            rs.getString("uuid"),
+                            rs.getString("authorUUID"),
+                            rs.getString("authorNAME"),
+                            rs.getDouble("incrementPercent"),
+                            rs.getInt("initialPrice"),
+                            rs.getString("timeoutFormat"),
+                            rs.getLong("timeoutDate"),
+                            rs.getString("offeredItemB64"),
+                            rs.getString("topBidderUUID"),
+                            rs.getString("topBidderName"),
+                            rs.getDouble("topBidPrice")
+                    );
+                    results.add(model);
+                }
+            }
+        }
+
+        return results;
     }
 }

@@ -28,6 +28,11 @@ public class CommandManager {
         this.commands.put("openauction", new ViewAuctionCommand(plugin));
         this.commands.put("bid", new ViewAuctionCommand(plugin));
 
+        this.commands.put("auctionlist", new ListingsCommand(plugin));
+        this.commands.put("auctions", new ListingsCommand(plugin));
+        this.commands.put("forsale", new ListingsCommand(plugin));
+        this.commands.put("exploreauctions", new ListingsCommand(plugin));
+
         this.RegisterPluginCommands(plugin);
     }
 

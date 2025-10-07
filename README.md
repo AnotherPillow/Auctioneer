@@ -12,6 +12,7 @@ Full details can be found in [LICENSE.md](LICENSE.md)
 ![the started an auction message is displayed in chat](marketing/started-auction.png)
 ![the bidding UI showing some gold blocks enchanted at ~40k](marketing/bidding-ui.png)
 ![the chat output when an auction is won](marketing/chat-win.png)
+![the gui showing active auctions](marketing/listings-ui.png)
 
 ## Installation
 
@@ -29,3 +30,7 @@ Full details can be found in [LICENSE.md](LICENSE.md)
 - `/viewauction [uuid]`: View/bid on an auction.
 - `/openauction [uuid]`: View/bid on an auction.
 - `/bid [uuid]`: View/bid on an auction.
+- `/auctionlist`: Show the active auction list.
+- `/auctions`: Show the active auction list.
+- `/forsale`: Show the active auction list.
+- `/exploreauctions`: Show the active auction list.

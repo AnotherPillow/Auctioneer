@@ -28,3 +28,15 @@ commands:
   bid:
     description: View/bid on an auction.
     usage: /viewauction <uuid>
+  auctionlist:
+    description: View active auctions
+    usage: /auctionlist
+  auctions:
+    description: View active auctions
+    usage: /auctions
+  forsale:
+    description: View active auctions
+    usage: /forsale
+  exploreauctions:
+    description: View active auctions
+    usage: /exploreauctions
